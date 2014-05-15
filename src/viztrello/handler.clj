@@ -9,10 +9,14 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.nested-params :refer [wrap-nested-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
-            [viztrello.oauth.trello :as auth]))
+            [viztrello.oauth.trello :as auth]
+            [clojure.pprint :refer [pprint]]))
 
 (defroutes app-routes
-  (GET "/" [] "Hello World!")
+  (GET "/" [:as {session :session}]
+       (let [identity (::friend/identity session)
+             authentication ((:authentications identity) (:current identity))]
+       (str "<pre>" (with-out-str (pprint authentication)) "</pre>")))
   (route/not-found "Not Found"))
 
 

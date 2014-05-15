@@ -9,15 +9,17 @@
 
 (defn creds->user
   [credentials]
-  (let [me (http/get "https://api.trello.com/1/members/me"
-                     {:as :json
-                      :query-params credentials
-                      :throw-exceptions false})]
-    (when (= (:status me) 200)
-      {:identity (-> me :body :id)
-       :roles [:user]
-       :trello (:body me)
-       :credentials credentials})))
+  (let [query-params {:fields "fullName,initials,url,username,timezoneInfo,email"}
+        query-params (merge query-params credentials)]
+    (let [me (http/get "https://api.trello.com/1/members/me"
+                       {:as :json
+                        :query-params query-params
+                        :throw-exceptions false})]
+      (when (= (:status me) 200)
+        {:identity (-> me :body :id)
+         :roles [:user]
+         :trello (:body me)
+         :credentials credentials}))))
 
 (defn workflow
   [app-name key secret]
