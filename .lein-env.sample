@@ -1,0 +1,5 @@
+{ ; get from https://trello.com/1/appKey/generate
+  :trello-key nil
+
+  ; get from https://trello.com/1/appKey/generate
+  :trello-secret nil }
