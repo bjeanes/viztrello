@@ -6,6 +6,7 @@
             [clojure.java.io :as io]
             [environ.core :refer [env]]
             [ring.adapter.jetty :as jetty]
+            [ring.middleware.reload :refer [wrap-reload]]
             [ring.middleware.session :refer [wrap-session]]
             [ring.middleware.session.cookie :refer [cookie-store]]
             [ring.middleware.stacktrace :refer [wrap-stacktrace]]
@@ -20,7 +21,7 @@
   (route/not-found (slurp (io/resource "404.html"))))
 
 (def app
-  (-> app-routes
+  (-> #'app-routes
       (friend/wrap-authorize #{:user})
       (friend/authenticate {:credential-fn auth/creds->user
                             :workflows [(auth/workflow "VizTrello"
@@ -41,7 +42,7 @@
     (-> app
         ((if (env :production)
            wrap-error-page
-           wrap-stacktrace))
+           #(wrap-stacktrace (wrap-reload %))))
         (site {:session {:store store}}))))
 
 ;; For interactive development:
