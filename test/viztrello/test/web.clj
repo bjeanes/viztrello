@@ -3,6 +3,8 @@
         ring.mock.request
         viztrello.web))
 
+(def app viztrello.web/authed-app)
+
 (deftest test-app
   (testing "main route"
     (let [response (app (request :get "/"))]

@@ -25,20 +25,36 @@ Everything is done through the REPL. Start one with:
 $ lein repl
 ```
 
-Then to boot up a web server, you can do:
+Then to control the system, you can do:
 
 ```clojure
-(require '[viztrello.web :as web])
-(def server (web/-main))
+(go) ; initiaze and start
+(stop) ; stops
+(start) ; start again
+(reset) ; stops, re-inits, re-starts
+(refresh) ; if you break things (e.g. syntax error) you may need to run this
+          ; to reload everything in order to be able to (reset) again.
 ```
 
-To stop the server, you can do:
+(If you *really* want to just boot a the system locally without a REPL, you can
+do `lein run -m viztrello`.)
+
+## Testing
+
+From a REPL
 
 ```clojure
-(.stop server)
+(test/run-all-tests)
 ```
+
+In dev mode, most things will reload automatically, so you should only need to `(reset)` when
+you need to re-initialize something (e.g. database connections).
 
 ## Deploying
+
+```shell
+git push git@heroku.com:viztrello.git master
+```
 
 ## License
 

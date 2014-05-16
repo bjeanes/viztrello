@@ -1,5 +1,6 @@
 (ns viztrello.web
-  (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
+  (:require [com.stuartsierra.component :as component]
+            [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
             [compojure.handler :refer [site]]
             [compojure.route :as route]
             [cemerick.friend :as friend]
@@ -20,7 +21,7 @@
          (str "<pre>" (with-out-str (pprint authentication)) "</pre>")))
   (route/not-found (slurp (io/resource "404.html"))))
 
-(def app
+(def authed-app
   (-> #'app-routes
       (friend/wrap-authorize #{:user})
       (friend/authenticate {:credential-fn auth/creds->user
@@ -45,9 +46,21 @@
            #(wrap-stacktrace (wrap-reload %))))
         (site {:session {:store store}}))))
 
-;; For interactive development:
-;; (.stop server)
-;; (def server (-main))
-(defn -main [& [port]]
-  (let [port (Integer. (or port (env :port) 5000))]
-    (jetty/run-jetty (wrap-app #'app) {:port port :join? false})))
+(defrecord App [port]
+  component/Lifecycle
+
+  (start [this]
+    (if (:server this)
+      this
+      (assoc this :server
+             (jetty/run-jetty (wrap-app #'authed-app)
+                              {:port port :join? false}))))
+
+  (stop [this]
+    (if-let [server (:server this)]
+      (do (.stop server)
+          (dissoc this :server))
+      this)))
+
+(defn new-app [port]
+  (map->App {:port port}))

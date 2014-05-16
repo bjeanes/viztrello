@@ -7,11 +7,15 @@
                                                            org.mindrot/jbcrypt
                                                            net.sourceforge.nekohtml/nekohtml
                                                            org.apache.httpcomponents/httpclient]]
+                 [com.stuartsierra/component "0.2.1"]
                  [compojure "1.1.8" :exclusions [ring/ring-core]]
                  [environ "0.5.0"]
                  [org.clojure/clojure "1.6.0"]
                  [ring/ring-devel "1.2.2"]
                  [ring/ring-jetty-adapter "1.2.2"]]
   :min-lein-version "2.0.0"
-  :profiles {:uberjar {:aot :all}}
+  :profiles {:dev {:source-paths ["dev"]
+                   :dependencies [[org.clojure/tools.namespace "0.2.4"]
+                                  [ring-mock  "0.1.5"]]}
+             :uberjar {:aot :all}}
   :uberjar-name "viztrello-standalone.jar")
