@@ -1,4 +1,4 @@
-(ns viztrello.oauth
+(ns friend.oauth
   (:require [oauth.client :as oauth]
             [clj-http.client :refer [generate-query-string]]
             [ring.util.response :refer [response status redirect]]

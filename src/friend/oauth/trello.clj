@@ -1,5 +1,5 @@
-(ns viztrello.oauth.trello
-  (:require [viztrello.oauth :as oauth]
+(ns friend.oauth.trello
+  (:require [friend.oauth :as oauth]
             [clj-http.client :as http]))
 
 (def ^:private endpoints
