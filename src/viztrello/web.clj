@@ -17,7 +17,7 @@
   (GET "/" [:as {session :session}]
        (let [identity (::friend/identity session)
              authentication ((:authentications identity) (:current identity))]
-       (str "<pre>" (with-out-str (pprint authentication)) "</pre>")))
+         (str "<pre>" (with-out-str (pprint authentication)) "</pre>")))
   (route/not-found (slurp (io/resource "404.html"))))
 
 (def app
