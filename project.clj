@@ -13,4 +13,5 @@
                  [ring/ring-devel "1.2.2"]
                  [trello "0.1.2-SNAPSHOT"]]
   :min-lein-version "2.0.0"
+  :profiles {:uberjar {:aot :all}}
   :uberjar-name "viztrello-standalone.jar")
