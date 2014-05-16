@@ -7,9 +7,6 @@
             [cemerick.friend.workflows :as wf])
   (:import org.apache.http.client.utils.URIBuilder))
 
-(def login "/login")
-(def callback (str login "/callback"))
-
 (defn make-consumer
   [{:keys [key secret request-uri
            access-uri authorize-uri]}]
@@ -22,9 +19,10 @@
       (.toString)))
 
 (defn- callback-uri
-  [{scheme :scheme {host "host"} :headers}]
-
-  (str (name scheme) "://" host callback))
+  [{scheme :scheme {host "host"} :headers :as req}]
+  (let [login-uri (-> req ::friend/auth-config :login-uri)
+        callback-path (str login-uri "/callback")]
+    (str (name scheme) "://" host callback-path)))
 
 (defn- redirect-to-provider-for-access!
   [consumer callback-uri]
@@ -35,11 +33,14 @@
 
 (defn- login?
   [request]
-  (= (request/path-info request) login))
+  (= (request/path-info request)
+     (-> request ::friend/auth-config :login-uri)))
 
 (defn- callback?
   [request]
-  (= (request/path-info request) callback))
+  (let [login-uri (-> request ::friend/auth-config :login-uri)
+        callback-uri (str login-uri "/callback")]
+    (= (request/path-info request) callback-uri)))
 
 (defn- handle-callback
   [request config consumer]
