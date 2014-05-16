@@ -38,3 +38,6 @@
   "Reinitializes and restarts the entire development system."
   (stop)
   (refresh :after 'user/go))
+
+(defn tests []
+  (test/run-all-tests #"viztrello"))

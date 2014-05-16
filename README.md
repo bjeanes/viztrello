@@ -44,7 +44,7 @@ do `lein run -m viztrello`.)
 From a REPL
 
 ```clojure
-(test/run-all-tests)
+(tests)
 ```
 
 In dev mode, most things will reload automatically, so you should only need to `(reset)` when
