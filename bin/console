@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+UBERJAR="target/viztrello-standalone.jar"
+
+if [ -f $UBERJAR ]; then
+  java $JVM_OPTS -cp $UBERJAR clojure.main
+else
+  lein repl
+fi
