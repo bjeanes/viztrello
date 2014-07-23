@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+UBERJAR="target/viztrello-standalone.jar"
+NAMESPACE="viztrello.db.migrate"
+
+if [ -f $UBERJAR ]; then
+  LAUNCHER="java $JVM_OPTS -cp $UBERJAR clojure.main"
+else
+  LAUNCHER="lein run"
+fi
+
+$LAUNCHER -m $NAMESPACE

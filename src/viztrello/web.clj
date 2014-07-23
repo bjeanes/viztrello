@@ -6,19 +6,50 @@
             [cemerick.friend :as friend]
             [clojure.java.io :as io]
             [environ.core :refer [env]]
+            [hiccup.page :refer (html5)]
             [ring.adapter.jetty :as jetty]
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.middleware.session :refer [wrap-session]]
             [ring.middleware.session.cookie :refer [cookie-store]]
             [ring.middleware.stacktrace :refer [wrap-stacktrace]]
-            [friend.oauth.trello :as auth]
-            [clojure.pprint :refer [pprint]]))
+            [viztrello.trello :as trello]
+            [friend.oauth.trello :as auth]))
+
+(defn- req->creds [req]
+  "Given a request, return the Trello credentials saved in the session"
+  (let [identity (::friend/identity (:session req))
+        current-user ((:authentications identity) (:current identity))]
+    (:credentials current-user)))
+
+(defn- cards->html [cards]
+  [:ul
+   (for [card cards]
+     [:li [:a {:href (str "/c/" (:shortLink card))} (:name card)]])])
+
+(defn layout
+  [r & content]
+  (let [identity (::friend/identity (:session r))
+        current-user ((:authentications identity) (:current identity))]
+    (html5
+      [:head
+       [:title "VizTrello"]]
+      [:body
+       (cons
+         [:p (str "Hi @" (-> current-user :trello :username))]
+         content)])))
 
 (defroutes app-routes
-  (GET "/" [:as {session :session}]
-       (let [identity (::friend/identity session)
-             authentication ((:authentications identity) (:current identity))]
-         (str "<pre>" (with-out-str (pprint authentication)) "</pre>")))
+  (GET "/" r
+       (layout r [:form {:action "/search"}
+                  [:input {:name "query"}]
+                  [:input {:type "submit" :value "Search"}]]))
+  (GET "/search" [query :as r]
+       (layout r
+               [:h1 "Pick a card to display dependencies"]
+               (cards->html (:cards (trello/search (req->creds r) query)))))
+  (GET "/c/:id" [id :as r]
+       (layout r
+               ))
   (route/not-found (slurp (io/resource "404.html"))))
 
 (def authed-app
